@@ -1,0 +1,16 @@
+Authors:    Johnathan Norheim, Mark Mackey
+
+We could change the print function accept an argument 
+for a file handle and for testing we could change the
+file handle from standard out to a file and then create 
+another function that compares two files to see if they're 
+identical.  We could then use that function inside our 
+TS_ASSERT function in the testing suite and compare 
+the output to the output in the samples directory.
+
+We could also add tests for each of the functions and 
+source files individually.
+
+We could also write a function that replaces readInput
+and accepts a string as input and returns a string which
+could then be compared without the need for files.
