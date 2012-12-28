@@ -1,0 +1,212 @@
+<!-- Original Author: Michael Ekstrand
+     Adapted: Emery Mizero
+
+     A "project" describes a set of targets that may be requested
+     when Ant is executed.  The "default" attribute defines the
+     target which is executed if no specific target is requested,
+     and the "basedir" attribute defines the current working directory
+     from which Ant executes the requested task.  This is normally
+     set to the current working directory.
+
+     Ant projects often define properties, which are just names with
+     values that will be substituted when the name is used elsewhere
+     in the ant project.
+-->
+
+<project name="Project2" default="run">
+  <property name="srcdir" value="src"/>
+  <property name="bindir" value="bin"/>
+  <property name="libdir" value="${basedir}/lib"/>
+
+  <property name="zipname" value="Project2"/>
+
+  <property name="package" value="edu.umn.csci1902.project2"/>
+  <property name="test-package" value="edu.umn.csci1902.project2.tests"/>
+  <property name="appclass" value="${package}.Main"/>
+
+  <property name="arg.chance" value="0.5"/>
+  <property name="arg.reqtime" value="300"/>
+  <property name="arg.runways" value="1"/>
+  <property name="arg.duration" value="7200"/>
+
+  <property name="logprops" value="logging.properties"/>
+  <property name="build.sysclasspath" value="first"/>
+
+  <property name="junit.enabled" value="true"/>
+  <property name="lib.junit.jar" value="${libdir}/junit.jar"/>
+  <property name="lib.junit.sha1.expected"
+            value="e4f1766ce7404a08f45d859fb9c226fc9e41a861"/>
+
+  <path id="classpath.base"/>
+
+  <path id="lib.classpath">
+    <fileset dir="${libdir}">
+      <include name="*.jar"/>
+    </fileset>
+  </path>
+
+
+  <!-- ==================== Setup Target ================================ -->
+
+  <!--
+  The "setup" target sets up the local environment, pulling in things like JUnit.
+  -->
+  
+  <target name="init">
+    <mkdir dir="${libdir}"/>
+    <condition property="lib.junit.present">
+      <available classname="org.junit.Assert"
+                 classpathref="lib.classpath"/>
+    </condition>
+  </target>
+
+  <target name="fetch.junit" depends="init" unless="lib.junit.present">
+    <get src="http://search.maven.org/remotecontent?filepath=junit/junit/4.10/junit-4.10.jar"
+         dest="${libdir}/junit.jar"/>
+  </target>
+
+  <target name="lib.junit" depends="fetch.junit" if="junit.enabled">
+    <checksum file="${lib.junit.jar}"
+              property="lib.junit.sha1"
+              algorithm="SHA-1"/>
+    <condition property="lib.junit.good">
+      <equals arg1="${lib.junit.sha1}" arg2="${lib.junit.sha1.expected}"/>
+    </condition>
+    <fail message="JUnit JAR corrupted. Run 'ant full-clean' and try again."
+          unless="lib.junit.good"/>
+  </target>
+
+  <target name="setup" depends="lib.junit"/>
+
+  <!-- ==================== Depend Target ================================ -->
+
+  <!--
+  The "depends" target removes any class files that were compiled
+  based on other Java files that have since changed.  These files
+  are out-of-date, and need to be rebuilt.
+  -->
+  <target name="depend">
+    <depend srcDir="${srcdir}" destDir="${bindir}"/>
+  </target>
+
+  <!-- ==================== Build Target  =============================== -->
+  <!--
+  The "build" target compiles all of your Java files into .class
+  files that are ready to run.
+  -->
+  <target name="build" depends="depend,setup">
+    <mkdir dir="${bindir}"/>
+    <javac source="1.7"
+	       target="1.7"
+	       debug="yes"
+           srcdir="${srcdir}"
+           destdir="${bindir}"
+           includes="**/*.java">
+    	<classpath refid="lib.classpath"/>
+    </javac>
+  </target>
+
+
+  <!-- ==================== Test Target  =============================== -->
+  <!-- The "test" target runs your JUnit tests.  -->
+  <target name="test" depends="build">
+    <junit printsummary="yes" fork="yes"
+           haltonfailure="no" failureproperty="tests.failed">
+      <classpath refid="lib.classpath"/>
+      <jvmarg value="-Djava.util.logging.config.file=${logprops}"/>
+      <classpath path="${bindir}"/>
+      <formatter type="plain"/>
+      <batchtest>
+        <fileset dir="${srcdir}">
+          <include name="**/*Test.java"/>
+        </fileset>
+      </batchtest>
+    </junit>
+    <!--
+        we use this and failureproperty rather than haltonfailure so
+        that it runs and reports on all tests, even after failing, but
+        still reports the overall build as a failure.  haltonfailure
+        aborts the build after the first failed test.
+      -->
+    <fail if="tests.failed"/>
+  </target>
+
+  <!-- ==================== RUN target  ================================= -->
+  <!-- The "run" target runs the application -->
+  <target name="run" depends="build">
+    <java classname="${appclass}" fork="no">
+      <classpath path="${bindir}"/>
+      <arg line="${arg.chance}"/>
+      <arg line="${arg.reqtime}"/>
+      <arg line="${arg.runways}"/>
+      <arg line="${arg.duration}"/>
+    </java>
+  </target>
+
+  <!-- ==================== Clean Target  =============================== -->
+
+  <!--
+  The "clean" target deletes all the compiled files.  Clean is used both to
+  save space, and to make sure a compile starts out fresh.
+  -->
+  <target name="clean">
+    <delete dir="${bindir}"/>
+    <delete dir=".">
+      <include name="TEST-*.txt"/>
+    </delete>
+  </target>
+
+  <target name="full-clean" depends="clean">
+    <delete dir="${libdir}"/>
+  </target>
+
+  <!-- ==================== Package Target ============================== -->
+
+  <resources id="package.dir.res">
+    <mappedresources>
+      <string value="${package}"/>
+      <unpackagemapper from="*" to="*"/>
+    </mappedresources>
+  </resources>
+  <property name="package.dir" value="${toString:package.dir.res}"/>
+
+  <resources id="test-package.dir.res">
+    <mappedresources>
+      <string value="${test-package}"/>
+      <unpackagemapper from="*" to="*"/>
+    </mappedresources>
+  </resources>
+  <property name="test-package.dir" value="${toString:test-package.dir.res}"/>
+
+  <resources id="main.source">
+    <mappedresources>
+      <string value="${appclass}"/>
+      <unpackagemapper from="*" to="${srcdir}/*.java"/>
+    </mappedresources>
+  </resources>
+
+  <target name="validate">
+    <available property="source.found"
+               file="${toString:main.source}"/>
+    <fail unless="source.found"
+          message="Cannot find your source file ${toString:main.source}"/>
+  </target>
+
+  <!--
+  The "package" target creates a package of all your Java files, suitable for
+  turning in to a grader - or distributing to a customer.
+  -->
+  <target name="package" depends="validate">
+    <delete file="${zipname}.zip"/>
+    <zip destfile="${basedir}/${zipname}.zip">
+      <zipfileset dir="${basedir}" prefix="${zipname}">
+        <include name="${srcdir}/${package.dir}/*.java"/>
+        <include name="${srcdir}/${test-package.dir}/*Test.java"/>
+        <include name="README.txt"/>
+	<include name="build.xml"/>
+	<include name="logging.properties"/>
+      </zipfileset>
+    </zip>
+  </target>
+
+</project>
