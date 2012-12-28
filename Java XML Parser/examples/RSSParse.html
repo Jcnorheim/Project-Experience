@@ -1,0 +1,29 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+  <TITLE>4131 PA5</TITLE>
+</HEAD>
+
+<!-- modify web.xml like with ShowParameters and its buddy in order to do java classes -->
+<H1 ALIGN="CENTER">Programming with java servlets, tomcat, and rss feeds</H1>
+	
+
+		<FORM ACTION="ShowParameters"
+      METHOD="POST">
+		PLEASE SELECT ONE OR MORE SOURCES OF RSS FEED (Hold down the Ctrl (windows) / Command (Mac) button to select multiple options.)<br/> 
+		<select name = "source" multiple="multiple">
+  	 	<option value="ABC">ABC</option>
+   		<option value="CNN">CNN</option>
+   		<option value="NBC">NBC</option>
+   		<option value="BBC">BBC</option>
+ 		</select><br/><br/><br/>
+		Please enter one or more words using which you want to select newsitems. Ignores the symbols: , : ; " ' . ( ) <br/>
+		Search Terms: <input type="text" name="search" maxLength = "1000" size = "100"/><br /><br/><br/>
+		Indicate if search should match ANY or All words in your list. <br/>
+		<input type="radio" name="any/all" value="any" /> ANY
+ 		<input type="radio" name="any/all" value="all" /> ALL <br /><br/><br/>
+   		
+   		<input type="submit" value="Submit" />
+ 		</form> 
+	</body>
+</html>

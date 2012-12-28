@@ -1,0 +1,58 @@
+
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5"> 
+
+	<servlet>
+		<servlet-name>HelloWorld</servlet-name>
+		<servlet-class>HelloWorld</servlet-class>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>HelloWorld</servlet-name>
+		<url-pattern>/examples/servlets/HelloWorld</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>Greetings</servlet-name>
+		<servlet-class>Greetings</servlet-class>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>Greetings</servlet-name>
+		<url-pattern>/examples/servlets/Greetings</url-pattern>
+
+	</servlet-mapping>
+	
+	<servlet>
+                <servlet-name>Echo</servlet-name>
+                <servlet-class>Echo</servlet-class>
+        </servlet>
+
+        <servlet-mapping>
+                <servlet-name>Echo</servlet-name>
+                <url-pattern>/examples/servlets/Echo</url-pattern>
+
+        </servlet-mapping>
+        
+	<servlet>
+                <servlet-name>Parse</servlet-name>
+                <servlet-class>Parse</servlet-class>
+   </servlet>
+
+   <servlet-mapping>
+                <servlet-name>Parse</servlet-name>
+                <url-pattern>/examples/servlets/Parse</url-pattern>
+
+   </servlet-mapping>
+   
+   <servlet>
+                <servlet-name>servlet</servlet-name>
+                <servlet-class>servlet</servlet-class>
+   </servlet>
+
+   <servlet-mapping>
+                <servlet-name>servlet</servlet-name>
+                <url-pattern>/examples/servlets/servlet</url-pattern>
+
+   </servlet-mapping>
+	
+</web-app>
