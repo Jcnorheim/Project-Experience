@@ -1,0 +1,1 @@
+<%@ ServiceHost Language="C#" Debug="true" Service="Petio.RandomStory.RandomStoryService" CodeBehind="RandomStoryService.svc.cs" %>
